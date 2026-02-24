@@ -1,10 +1,14 @@
-// features/clients/services/clients.service.ts
-
 import { createClient as createSupabaseClient } from "@/lib/supabase/client";
 
 export async function getClients() {
   const supabase = createSupabaseClient();
-  return supabase.from("clients").select("*").order("created_at");
+  const { data, error } = await supabase
+    .from("clients")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) throw new Error(error.message);
+  return data;
 }
 
 export async function createClient(data: any) {
