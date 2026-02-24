@@ -24,31 +24,26 @@ import {
 const data = [
   {
     name: "María González",
-    company: "Tech Solutions",
     email: "maria@techsolutions.cl",
     phone: "+56 9 1234 5678",
   },
   {
     name: "Carlos Pérez",
-    company: "Diseño Creativo",
     email: "carlos@disenocreativo.cl",
     phone: "+56 9 8765 4321",
   },
   {
     name: "Ana Rodríguez",
-    company: "Marketing Digital",
     email: "ana@mktdigital.cl",
     phone: "+56 9 5555 1234",
   },
   {
     name: "Juan Martínez",
-    company: "Constructora JM",
     email: "juan@constructorajm.cl",
     phone: "+56 9 4444 5678",
   },
   {
     name: "Sofía López",
-    company: "Consultora SL",
     email: "sofia@consultorasl.cl",
     phone: "+56 9 3333 9876",
   },
@@ -107,9 +102,6 @@ export default function ClientsTable() {
             <Text fz="sm" fw={500}>
               {item.name}
             </Text>
-            <Text c="dimmed" fz="xs">
-              {item.company}
-            </Text>
           </div>
         </Group>
       </Table.Td>
@@ -147,9 +139,6 @@ export default function ClientsTable() {
           <div>
             <Text fz="sm" fw={500}>
               {item.name}
-            </Text>
-            <Text c="dimmed" fz="xs">
-              {item.company}
             </Text>
           </div>
         </Group>
