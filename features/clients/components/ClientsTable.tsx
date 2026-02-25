@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   IconDots,
   IconMessages,
@@ -13,7 +14,6 @@ import {
   ActionIcon,
   Anchor,
   Avatar,
-  Badge,
   Card,
   Group,
   Menu,
@@ -21,9 +21,13 @@ import {
   Table,
   Text,
   VisuallyHidden,
+  Modal,
 } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import { useRouter } from "next/navigation";
 
 import { Client } from "../types/clients.type";
+import ClientForm from "./ClientForm";
 
 function ActionsMenu() {
   return (
@@ -70,6 +74,20 @@ function getInitials(name: string) {
 }
 
 export default function ClientsTable({ data }: ClientsTableProps) {
+  const [opened, { open, close }] = useDisclosure(false);
+  const [editingClient, setEditingClient] = useState<Client | null>(null);
+  const router = useRouter();
+
+  const handleEdit = (client: Client) => {
+    setEditingClient(client);
+    open();
+  };
+
+  const handleSuccess = () => {
+    close();
+    setEditingClient(null);
+    router.refresh();
+  };
   // --- Vista Desktop: Tabla ---
   const rows = data?.map((item) => (
     <Table.Tr key={item.email}>
@@ -96,7 +114,12 @@ export default function ClientsTable({ data }: ClientsTableProps) {
 
       <Table.Td>
         <Group gap={0} justify="flex-end">
-          <ActionIcon variant="subtle" color="gray" aria-label="Editar">
+          <ActionIcon
+            variant="subtle"
+            color="gray"
+            aria-label="Editar"
+            onClick={() => handleEdit(item)}
+          >
             <IconPencil size={16} stroke={1.5} />
           </ActionIcon>
           <ActionsMenu />
@@ -120,7 +143,12 @@ export default function ClientsTable({ data }: ClientsTableProps) {
           </div>
         </Group>
         <Group gap={4}>
-          <ActionIcon variant="subtle" color="gray" aria-label="Editar">
+          <ActionIcon
+            variant="subtle"
+            color="gray"
+            aria-label="Editar"
+            onClick={() => handleEdit(item)}
+          >
             <IconPencil size={16} stroke={1.5} />
           </ActionIcon>
           <ActionsMenu />
@@ -167,6 +195,14 @@ export default function ClientsTable({ data }: ClientsTableProps) {
       <Stack hiddenFrom="sm" gap="sm">
         {cards}
       </Stack>
+
+      <Modal opened={opened} onClose={close} title="Editar Cliente" centered>
+        <ClientForm
+          initialData={editingClient}
+          onSuccess={handleSuccess}
+          onCancel={close}
+        />
+      </Modal>
     </>
   );
 }

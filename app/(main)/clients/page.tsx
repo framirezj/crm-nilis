@@ -1,14 +1,14 @@
-import { Title, Group, Button } from "@mantine/core";
-import { IconPlus } from "@tabler/icons-react";
+import { Title, Group } from "@mantine/core";
 import ClientsTable from "@/features/clients/components/ClientsTable";
 import { getClients } from "@/features/clients/services/clients.service";
+import AddClientButton from "@/features/clients/components/AddClientButton";
 
 export default function ClientsPage() {
   return (
     <div>
       <Group justify="space-between" mb="lg" p="lg">
         <Title order={2}>Clientes</Title>
-        <Button leftSection={<IconPlus size={16} />}>Nuevo cliente</Button>
+        <AddClientButton />
       </Group>
       <ClientsPageContent />
     </div>
