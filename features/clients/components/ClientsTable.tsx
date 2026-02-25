@@ -11,52 +11,19 @@ import {
 } from "@tabler/icons-react";
 import {
   ActionIcon,
+  Anchor,
   Avatar,
+  Badge,
   Card,
   Group,
   Menu,
   Stack,
   Table,
   Text,
+  VisuallyHidden,
 } from "@mantine/core";
 
-// Datos de ejemplo – luego se reemplazarán con datos reales de Supabase
-const data = [
-  {
-    name: "María González",
-    email: "maria@techsolutions.cl",
-    phone: "+56 9 1234 5678",
-  },
-  {
-    name: "Carlos Pérez",
-    email: "carlos@disenocreativo.cl",
-    phone: "+56 9 8765 4321",
-  },
-  {
-    name: "Ana Rodríguez",
-    email: "ana@mktdigital.cl",
-    phone: "+56 9 5555 1234",
-  },
-  {
-    name: "Juan Martínez",
-    email: "juan@constructorajm.cl",
-    phone: "+56 9 4444 5678",
-  },
-  {
-    name: "Sofía López",
-    email: "sofia@consultorasl.cl",
-    phone: "+56 9 3333 9876",
-  },
-];
-
-function getInitials(name: string) {
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-}
+import { Client } from "../types/clients.type";
 
 function ActionsMenu() {
   return (
@@ -89,34 +56,44 @@ function ActionsMenu() {
   );
 }
 
-export default function ClientsTable() {
+interface ClientsTableProps {
+  data: Client[] | null;
+}
+
+function getInitials(name: string) {
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+}
+
+export default function ClientsTable({ data }: ClientsTableProps) {
   // --- Vista Desktop: Tabla ---
-  const rows = data.map((item) => (
+  const rows = data?.map((item) => (
     <Table.Tr key={item.email}>
       <Table.Td>
         <Group gap="sm">
-          <Avatar size={40} radius={40} color="violet">
+          <Avatar size={30} radius={30} color="blue">
             {getInitials(item.name)}
           </Avatar>
-          <div>
-            <Text fz="sm" fw={500}>
-              {item.name}
-            </Text>
-          </div>
+          <Text fz="sm" fw={500}>
+            {item.name}
+          </Text>
         </Group>
       </Table.Td>
+
       <Table.Td>
-        <Text fz="sm">{item.email}</Text>
-        <Text fz="xs" c="dimmed">
-          Email
-        </Text>
+        <Anchor component="button" size="sm">
+          {item.email}
+        </Anchor>
       </Table.Td>
+
       <Table.Td>
         <Text fz="sm">{item.phone}</Text>
-        <Text fz="xs" c="dimmed">
-          Teléfono
-        </Text>
       </Table.Td>
+
       <Table.Td>
         <Group gap={0} justify="flex-end">
           <ActionIcon variant="subtle" color="gray" aria-label="Editar">
@@ -129,11 +106,11 @@ export default function ClientsTable() {
   ));
 
   // --- Vista Mobile: Cards ---
-  const cards = data.map((item) => (
+  const cards = data?.map((item) => (
     <Card key={item.email} withBorder padding="md" radius="md">
       <Group justify="space-between" mb="xs">
         <Group gap="sm">
-          <Avatar size={40} radius={40} color="violet">
+          <Avatar size={40} radius={40} color="blue">
             {getInitials(item.name)}
           </Avatar>
           <div>
@@ -153,9 +130,9 @@ export default function ClientsTable() {
       <Stack gap={4} mt="sm">
         <Group gap="xs">
           <IconMail size={14} stroke={1.5} color="gray" />
-          <Text fz="xs" c="dimmed">
+          <Anchor component="button" fz="xs">
             {item.email}
-          </Text>
+          </Anchor>
         </Group>
         <Group gap="xs">
           <IconPhone size={14} stroke={1.5} color="gray" />
@@ -171,7 +148,17 @@ export default function ClientsTable() {
     <>
       {/* Desktop */}
       <Table.ScrollContainer minWidth={800} visibleFrom="sm">
-        <Table verticalSpacing="md">
+        <Table verticalSpacing="sm">
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th>Cliente</Table.Th>
+              <Table.Th>Email</Table.Th>
+              <Table.Th>Teléfono</Table.Th>
+              <Table.Th>
+                <VisuallyHidden>Acciones</VisuallyHidden>
+              </Table.Th>
+            </Table.Tr>
+          </Table.Thead>
           <Table.Tbody>{rows}</Table.Tbody>
         </Table>
       </Table.ScrollContainer>

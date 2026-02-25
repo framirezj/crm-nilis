@@ -7,7 +7,6 @@ create table clients (
   name text not null,
   phone text,
   email text,
-  notes text,
   created_at timestamptz default now()
 );
 
