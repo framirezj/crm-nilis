@@ -24,6 +24,12 @@ export async function createClient() {
           }
         },
       },
+      // Ensure session is properly handled
+      auth: {
+        detectSessionInUrl: true,
+        persistSession: true,
+        autoRefreshToken: true,
+      },
     },
   );
 }

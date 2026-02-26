@@ -6,6 +6,7 @@ export async function middleware(request: NextRequest) {
     request,
   });
 
+  // Create a supabase client in the middleware
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -29,21 +30,29 @@ export async function middleware(request: NextRequest) {
     },
   );
 
-  // Refresca el token de autenticación
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // IMPORTANT: DO NOT remove auth.getUser() or clients will not be able to refresh their session.
+  // We wrap it in try-catch to avoid crashes on invalid sessions.
+  let user = null;
+  try {
+    const {
+      data: { user: authUser },
+    } = await supabase.auth.getUser();
+    user = authUser;
+  } catch (error) {
+    // If there's an error (like refresh_token_not_found), we treat as logged out
+    console.error("Auth middleware error:", error);
+  }
 
   const isAuthPage = request.nextUrl.pathname.startsWith("/auth");
 
-  // Si NO hay usuario y NO está en una página de auth → redirigir al login
+  // If NOT logged in and NOT on an auth page → redirect to login
   if (!user && !isAuthPage) {
     const url = request.nextUrl.clone();
     url.pathname = "/auth/login";
     return NextResponse.redirect(url);
   }
 
-  // Si HAY usuario y está en una página de auth → redirigir al dashboard
+  // If logged in and on an auth page → redirect to dashboard
   if (user && isAuthPage) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
