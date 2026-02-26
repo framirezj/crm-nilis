@@ -25,6 +25,7 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 import { Client } from "../types/clients.type";
 import ClientForm from "./ClientForm";
@@ -93,10 +94,23 @@ export default function ClientsTable({ data }: ClientsTableProps) {
     <Table.Tr key={item.email}>
       <Table.Td>
         <Group gap="sm">
-          <Avatar size={30} radius={30} color="blue">
+          <Avatar
+            size={30}
+            radius={30}
+            color="blue"
+            component={Link}
+            href={`/clients/${item.id}`}
+            style={{ cursor: "pointer" }}
+          >
             {getInitials(item.name)}
           </Avatar>
-          <Text fz="sm" fw={500}>
+          <Text
+            fz="sm"
+            fw={500}
+            component={Link}
+            href={`/clients/${item.id}`}
+            style={{ textDecoration: "none", color: "inherit" }}
+          >
             {item.name}
           </Text>
         </Group>
@@ -133,11 +147,23 @@ export default function ClientsTable({ data }: ClientsTableProps) {
     <Card key={item.email} withBorder padding="md" radius="md">
       <Group justify="space-between" mb="xs">
         <Group gap="sm">
-          <Avatar size={40} radius={40} color="blue">
+          <Avatar
+            size={40}
+            radius={40}
+            color="blue"
+            component={Link}
+            href={`/clients/${item.id}`}
+          >
             {getInitials(item.name)}
           </Avatar>
           <div>
-            <Text fz="sm" fw={500}>
+            <Text
+              fz="sm"
+              fw={500}
+              component={Link}
+              href={`/clients/${item.id}`}
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
               {item.name}
             </Text>
           </div>

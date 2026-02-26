@@ -6,6 +6,10 @@ export async function createJob(supabase: any, data: any) {
   return supabase.from("jobs").insert(data);
 }
 
+export async function getJobById(supabase: any, id: string) {
+  return supabase.from("jobs").select("*").eq("id", id);
+}
+
 export async function updateJob(supabase: any, id: string, data: any) {
   return supabase.from("jobs").update(data).eq("id", id);
 }

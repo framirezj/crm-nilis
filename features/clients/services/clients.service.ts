@@ -12,6 +12,17 @@ export async function createClient(supabase: any, data: any) {
   return supabase.from("clients").insert(data);
 }
 
+export async function getClientById(supabase: any, id: string) {
+  const { data, error } = await supabase
+    .from("clients")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) throw new Error(error.message);
+  return data;
+}
+
 export async function updateClient(supabase: any, id: string, data: any) {
   return supabase.from("clients").update(data).eq("id", id);
 }
