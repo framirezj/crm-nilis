@@ -5,6 +5,7 @@ import { Button, Group, Stack, TextInput, Title, Paper } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { Client } from "../types/clients.type";
 import { createClient, updateClient } from "../services/clients.service";
+import { createClient as createSupabaseClient } from "@/lib/supabase/client";
 
 interface ClientFormProps {
   initialData?: Client | null;
@@ -19,6 +20,7 @@ export default function ClientForm({
 }: ClientFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const supabase = createSupabaseClient();
 
   const form = useForm({
     initialValues: {
@@ -40,12 +42,13 @@ export default function ClientForm({
     try {
       if (initialData?.id) {
         const { error: updateError } = await updateClient(
+          supabase,
           initialData.id,
           values,
         );
         if (updateError) throw updateError;
       } else {
-        const { error: createError } = await createClient(values);
+        const { error: createError } = await createClient(supabase, values);
         if (createError) throw createError;
       }
 

@@ -1,7 +1,4 @@
-import { createClient as createSupabaseClient } from "@/lib/supabase/client";
-
-export async function getClients() {
-  const supabase = createSupabaseClient();
+export async function getClients(supabase: any) {
   const { data, error } = await supabase
     .from("clients")
     .select("*")
@@ -11,17 +8,14 @@ export async function getClients() {
   return data;
 }
 
-export async function createClient(data: any) {
-  const supabase = createSupabaseClient();
+export async function createClient(supabase: any, data: any) {
   return supabase.from("clients").insert(data);
 }
 
-export async function updateClient(id: string, data: any) {
-  const supabase = createSupabaseClient();
+export async function updateClient(supabase: any, id: string, data: any) {
   return supabase.from("clients").update(data).eq("id", id);
 }
 
-export async function deleteClient(id: string) {
-  const supabase = createSupabaseClient();
+export async function deleteClient(supabase: any, id: string) {
   return supabase.from("clients").delete().eq("id", id);
 }

@@ -2,6 +2,7 @@ import { Title, Group } from "@mantine/core";
 import ClientsTable from "@/features/clients/components/ClientsTable";
 import { getClients } from "@/features/clients/services/clients.service";
 import AddClientButton from "@/features/clients/components/AddClientButton";
+import { createClient } from "@/lib/supabase/server";
 
 export default function ClientsPage() {
   return (
@@ -16,6 +17,7 @@ export default function ClientsPage() {
 }
 
 async function ClientsPageContent() {
-  const clients = await getClients();
+  const supabase = await createClient();
+  const clients = await getClients(supabase);
   return <ClientsTable data={clients} />;
 }
