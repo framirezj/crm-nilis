@@ -19,7 +19,6 @@ import {
   IconUser,
   IconArrowLeft,
 } from "@tabler/icons-react";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 export default async function JobDetailsPage({
@@ -50,30 +49,49 @@ export default async function JobDetailsPage({
         mb="md"
         px={0}
       >
-        Volver a {client?.name}
+        Volver
       </Button>
 
       <Paper shadow="xs" p="xl" withBorder>
-        <Group justify="space-between" mb="xl">
+        <Group justify="space-between" mb="md">
           <Title order={2}>{jobData.title}</Title>
-          <Badge size="lg" color="blue" variant="light">
+          <Badge size="lg" color="yellow" variant="light">
             {jobData.status || "Pendiente"}
           </Badge>
         </Group>
 
         <Flex
-          gap="xl"
+          gap="sm"
           direction={{ base: "column", md: "row" }}
           align="flex-start"
         >
           <Box w={{ base: "100%", md: "66%" }}>
             <Stack gap="md">
               <div>
-                <Text fw={600} size="sm" c="dimmed" mb={8}>
-                  Descripción del Trabajo
-                </Text>
-                <Paper p="md" bg="var(--mantine-color-gray-0)" radius="md">
-                  <Text style={{ whiteSpace: "pre-wrap" }} c="blue" fw={700}>
+                <Paper radius="md">
+                  <Text fw={700} size="xl" c="violet">
+                    {jobData.price != null
+                      ? new Intl.NumberFormat("es-CL", {
+                          style: "currency",
+                          currency: "CLP",
+                        }).format(jobData.price)
+                      : "-"}
+                  </Text>
+                  <Text fw={600} size="sm" mb={8} c="dimmed">
+                    Precio Acordado
+                  </Text>
+                </Paper>
+              </div>
+            </Stack>
+          </Box>
+          <Box w={{ base: "100%", md: "66%" }}>
+            <Stack gap="md">
+              <div>
+                <Paper withBorder p="md" radius="md">
+                  <Text fw={600} size="sm" mb={8} c="dimmed">
+                    Descripción del Trabajo
+                  </Text>
+                  <Text fw={700}>
                     {jobData.description ||
                       "Sin descripción detallada registrada."}
                   </Text>
@@ -83,34 +101,8 @@ export default async function JobDetailsPage({
           </Box>
 
           <Box w={{ base: "100%", md: "34%" }}>
-            <Paper
-              withBorder
-              p="md"
-              radius="md"
-              bg="var(--mantine-color-gray-0)"
-            >
+            <Paper withBorder p="md" radius="md">
               <Stack gap="lg">
-                <Group wrap="nowrap">
-                  <IconCurrencyDollar
-                    size={24}
-                    color="var(--mantine-color-gray-6)"
-                    stroke={1.5}
-                  />
-                  <div>
-                    <Text size="xs" c="dimmed" fw={600} tt="uppercase">
-                      Precio Acordado
-                    </Text>
-                    <Text fw={700} size="lg" c="blue">
-                      {jobData.price != null
-                        ? new Intl.NumberFormat("es-AR", {
-                            style: "currency",
-                            currency: "ARS",
-                          }).format(jobData.price)
-                        : "-"}
-                    </Text>
-                  </div>
-                </Group>
-
                 <Group wrap="nowrap">
                   <IconCalendar
                     size={24}
@@ -121,7 +113,7 @@ export default async function JobDetailsPage({
                     <Text size="xs" c="dimmed" fw={600} tt="uppercase">
                       Fecha de creación
                     </Text>
-                    <Text fw={500} c="blue">
+                    <Text fw={500}>
                       {jobData.created_at
                         ? new Date(jobData.created_at).toLocaleDateString(
                             "es-CL",
@@ -149,7 +141,6 @@ export default async function JobDetailsPage({
                     <Text
                       component="a"
                       href={`/clients/${client?.id}`}
-                      c="blue"
                       fw={500}
                       style={{ textDecoration: "none" }}
                       className="hover:underline" // Mantine no siempre maneja este hover muy simple en next/link así que usamos clase base
