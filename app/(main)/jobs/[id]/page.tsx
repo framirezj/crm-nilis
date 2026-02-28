@@ -20,6 +20,7 @@ import {
   IconArrowLeft,
 } from "@tabler/icons-react";
 import { notFound } from "next/navigation";
+import EditJobButton from "@/features/jobs/components/EditJobButton";
 
 export default async function JobDetailsPage({
   params,
@@ -41,49 +42,47 @@ export default async function JobDetailsPage({
 
   return (
     <Container size="xl" mt="md">
-      <Button
-        component="a"
-        href={`/clients/${client?.id}`}
-        variant="subtle"
-        leftSection={<IconArrowLeft size={16} />}
-        mb="md"
-        px={0}
-      >
-        Volver
-      </Button>
+      <Group justify="space-between" mb="md">
+        <Button
+          component="a"
+          href={`/clients/${client?.id}`}
+          variant="subtle"
+          leftSection={<IconArrowLeft size={16} />}
+          px={0}
+        >
+          Volver
+        </Button>
+
+        <EditJobButton job={jobData} />
+      </Group>
 
       <Paper shadow="xs" p="xl" withBorder>
         <Group justify="space-between" mb="md">
-          <Title order={2}>{jobData.title}</Title>
-          <Badge size="lg" color="yellow" variant="light">
-            {jobData.status || "Pendiente"}
-          </Badge>
+          <Group>
+            <Title order={2}>{jobData.title}</Title>
+            <Badge size="lg" color="yellow" variant="light">
+              {jobData.status || "Pendiente"}
+            </Badge>
+          </Group>
         </Group>
+
+        <Text fw={700} size="xl" c="violet">
+          {jobData.price != null
+            ? new Intl.NumberFormat("es-CL", {
+                style: "currency",
+                currency: "CLP",
+              }).format(jobData.price)
+            : "-"}
+        </Text>
+        <Text fw={600} size="sm" mb={8} c="dimmed">
+          Precio Acordado
+        </Text>
 
         <Flex
           gap="sm"
           direction={{ base: "column", md: "row" }}
           align="flex-start"
         >
-          <Box w={{ base: "100%", md: "66%" }}>
-            <Stack gap="md">
-              <div>
-                <Paper radius="md">
-                  <Text fw={700} size="xl" c="violet">
-                    {jobData.price != null
-                      ? new Intl.NumberFormat("es-CL", {
-                          style: "currency",
-                          currency: "CLP",
-                        }).format(jobData.price)
-                      : "-"}
-                  </Text>
-                  <Text fw={600} size="sm" mb={8} c="dimmed">
-                    Precio Acordado
-                  </Text>
-                </Paper>
-              </div>
-            </Stack>
-          </Box>
           <Box w={{ base: "100%", md: "66%" }}>
             <Stack gap="md">
               <div>

@@ -2,7 +2,9 @@ import { createClient } from "@/lib/supabase/server";
 import { getClientById } from "@/features/clients/services/clients.service";
 import { getJobsByClient } from "@/features/jobs/services/jobs.service";
 import ClientJobsTable from "@/features/jobs/components/ClientJobsTable";
-import { Title, Container, Paper } from "@mantine/core";
+import { Title, Container, Paper, Button, Group } from "@mantine/core";
+import { IconArrowLeft } from "@tabler/icons-react";
+import AddJobButton from "@/features/jobs/components/AddJobButton";
 
 export default async function ClientPage({
   params,
@@ -20,13 +22,23 @@ export default async function ClientPage({
 
   return (
     <Container size="xl" mt="md">
-      <Paper shadow="xs" p="md" mb="xl" withBorder>
-        <Title order={2}>{client?.name}</Title>
-      </Paper>
+      <Button
+        component="a"
+        href={`/clients`}
+        variant="subtle"
+        leftSection={<IconArrowLeft size={16} />}
+        mb="md"
+        px={0}
+      >
+        Volver
+      </Button>
 
-      <Title order={3} mb="md">
-        Trabajos del Cliente
-      </Title>
+      <Group justify="space-between" align="center" mb="md">
+        <Title order={2} c="dimmed">
+          Cliente: {client?.name}
+        </Title>
+        <AddJobButton clientId={id} />
+      </Group>
       <ClientJobsTable data={jobs} />
     </Container>
   );
