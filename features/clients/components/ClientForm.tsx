@@ -85,8 +85,7 @@ export default function ClientForm({
 
             <TextInput
               label="Teléfono"
-              placeholder="+56 9 ..."
-              required
+              placeholder="56 9 ..."
               {...form.getInputProps("phone")}
             />
 
