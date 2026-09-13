@@ -15,6 +15,7 @@ import {
   Anchor,
   Avatar,
   Card,
+  Center,
   Group,
   Menu,
   Stack,
@@ -29,6 +30,7 @@ import Link from "next/link";
 
 import { Client } from "../types/clients.type";
 import ClientForm from "./ClientForm";
+import ClientsSearchBar from "./ClientsSearchBar";
 
 function ActionsMenu() {
   return (
@@ -77,7 +79,13 @@ function getInitials(name: string) {
 export default function ClientsTable({ data }: ClientsTableProps) {
   const [opened, { open, close }] = useDisclosure(false);
   const [editingClient, setEditingClient] = useState<Client | null>(null);
+  const [search, setSearch] = useState("");
   const router = useRouter();
+
+
+  const filtered =
+    data?.filter((c) => c.name.toLowerCase().includes(search.toLowerCase())) ??
+    [];
 
   const handleEdit = (client: Client) => {
     setEditingClient(client);
@@ -90,8 +98,8 @@ export default function ClientsTable({ data }: ClientsTableProps) {
     router.refresh();
   };
   // --- Vista Desktop: Tabla ---
-  const rows = data?.map((item) => (
-    <Table.Tr key={item.email}>
+  const rows = filtered.map((item) => (
+    <Table.Tr key={item.id}>
       <Table.Td>
         <Group gap="sm">
           <Avatar
@@ -143,8 +151,8 @@ export default function ClientsTable({ data }: ClientsTableProps) {
   ));
 
   // --- Vista Mobile: Cards ---
-  const cards = data?.map((item) => (
-    <Card key={item.email} withBorder padding="md" radius="md">
+  const cards = filtered.map((item) => (
+    <Card key={item.id} withBorder padding="md" radius="md">
       <Group justify="space-between" mb="xs">
         <Group gap="sm">
           <Avatar
@@ -198,8 +206,18 @@ export default function ClientsTable({ data }: ClientsTableProps) {
     </Card>
   ));
 
+  const emptyState = (
+    <Center py="xl">
+      <Text c="dimmed" fz="sm">
+        No se encontraron clientes para &ldquo;{search}&rdquo;
+      </Text>
+    </Center>
+  );
+
   return (
     <>
+      <ClientsSearchBar value={search} onChange={setSearch} />
+
       {/* Desktop */}
       <Table.ScrollContainer minWidth={800} visibleFrom="sm">
         <Table verticalSpacing="sm">
@@ -213,13 +231,21 @@ export default function ClientsTable({ data }: ClientsTableProps) {
               </Table.Th>
             </Table.Tr>
           </Table.Thead>
-          <Table.Tbody>{rows}</Table.Tbody>
+          <Table.Tbody>
+            {filtered.length === 0 && search ? (
+              <Table.Tr>
+                <Table.Td colSpan={4}>{emptyState}</Table.Td>
+              </Table.Tr>
+            ) : (
+              rows
+            )}
+          </Table.Tbody>
         </Table>
       </Table.ScrollContainer>
 
       {/* Mobile */}
-      <Stack hiddenFrom="sm" gap="sm">
-        {cards}
+      <Stack hiddenFrom="sm" gap="sm" px="lg">
+        {filtered.length === 0 && search ? emptyState : cards}
       </Stack>
 
       <Modal opened={opened} onClose={close} title="Editar Cliente" centered>
