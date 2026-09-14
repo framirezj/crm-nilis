@@ -113,15 +113,13 @@ export default async function JobDetailsPage({
                       Fecha de creación
                     </Text>
                     <Text fw={500}>
-                      {jobData.created_at
-                        ? new Date(jobData.created_at).toLocaleDateString(
-                            "es-CL",
-                            {
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                            },
-                          )
+                      {jobData.date
+                        ? new Date(jobData.date).toLocaleDateString("es-CL", {
+                            timeZone: "UTC",
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })
                         : "-"}
                     </Text>
                   </div>

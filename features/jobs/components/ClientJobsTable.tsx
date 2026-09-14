@@ -37,8 +37,15 @@ export default function ClientJobsTable({ data }: ClientJobsTableProps) {
       </Table.Td>
       <Table.Td>
         <Text fz="sm">
-          {item.created_at
-            ? new Date(item.created_at).toLocaleDateString("es-CL")
+          {item.date
+            ? new Intl.DateTimeFormat("es-CL", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+                timeZone: "UTC",
+              })
+                .format(new Date(item.date))
+                .replace(/\//g, "-")
             : "-"}
         </Text>
       </Table.Td>
@@ -74,9 +81,16 @@ export default function ClientJobsTable({ data }: ClientJobsTableProps) {
       </Group>
       <Stack gap={4}>
         <Text fz="xs" c="dimmed">
-          Creado:{" "}
-          {item.created_at
-            ? new Date(item.created_at).toLocaleDateString()
+          Fecha:{" "}
+          {item.date
+            ? new Intl.DateTimeFormat("es-CL", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+                timeZone: "UTC",
+              })
+                .format(new Date(item.date))
+                .replace(/\//g, "-")
             : "-"}
         </Text>
         <Button

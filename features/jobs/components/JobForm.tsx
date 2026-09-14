@@ -38,11 +38,13 @@ export default function JobForm({
       title: initialData?.title || "",
       description: initialData?.description || "",
       price: initialData?.price || 0,
+      date: initialData?.date ?? new Date().toISOString().split("T")[0],
     },
 
     validate: {
       title: (value) => (value.length < 2 ? "El título es obligatorio" : null),
       price: (value) => (value < 0 ? "El precio no puede ser negativo" : null),
+      date: (value) => (!value ? "La fecha es obligatoria" : null),
     },
   });
 
@@ -107,6 +109,13 @@ export default function JobForm({
               prefix="$"
               thousandSeparator
               {...form.getInputProps("price")}
+            />
+
+            <TextInput
+              label="Fecha"
+              type="date"
+              required
+              {...form.getInputProps("date")}
             />
 
             {error && (
