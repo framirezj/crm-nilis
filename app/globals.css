@@ -6,3 +6,23 @@ body {
   background-color: var(--mantine-color-body);
   color: var(--mantine-color-text);
 }
+
+/* ── Touch feedback para mobile ── */
+/* Elimina el highlight azul nativo de iOS */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Feedback visual al tocar: escala + opacidad */
+a,
+button,
+[role="button"] {
+  transition: opacity 0.1s ease, transform 0.1s ease;
+}
+
+a:active,
+button:active,
+[role="button"]:active {
+  opacity: 0.65;
+  transform: scale(0.96);
+}
