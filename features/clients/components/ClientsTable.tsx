@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
   IconDots,
   IconMessages,
@@ -18,6 +18,7 @@ import {
   Center,
   Group,
   Menu,
+  Pagination,
   Stack,
   Table,
   Text,
@@ -64,7 +65,12 @@ function ActionsMenu() {
 }
 
 interface ClientsTableProps {
-  data: Client[] | null;
+  data: Client[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  currentSearch: string;
 }
 
 function getInitials(name: string) {
@@ -76,16 +82,37 @@ function getInitials(name: string) {
     .slice(0, 2);
 }
 
-export default function ClientsTable({ data }: ClientsTableProps) {
+export default function ClientsTable({
+  data,
+  totalPages,
+  page,
+  currentSearch,
+}: ClientsTableProps) {
   const [opened, { open, close }] = useDisclosure(false);
   const [editingClient, setEditingClient] = useState<Client | null>(null);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(currentSearch);
   const router = useRouter();
 
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      const params = new URLSearchParams();
+      if (search) params.set("search", search);
+      params.set("page", String(newPage));
+      router.push(`/clients?${params.toString()}`);
+    },
+    [router, search]
+  );
 
-  const filtered =
-    data?.filter((c) => c.name.toLowerCase().includes(search.toLowerCase())) ??
-    [];
+  const handleSearch = useCallback(
+    (value: string) => {
+      setSearch(value);
+      const params = new URLSearchParams();
+      if (value) params.set("search", value);
+      params.set("page", "1");
+      router.push(`/clients?${params.toString()}`);
+    },
+    [router]
+  );
 
   const handleEdit = (client: Client) => {
     setEditingClient(client);
@@ -97,8 +124,9 @@ export default function ClientsTable({ data }: ClientsTableProps) {
     setEditingClient(null);
     router.refresh();
   };
+
   // --- Vista Desktop: Tabla ---
-  const rows = filtered.map((item) => (
+  const rows = data.map((item) => (
     <Table.Tr key={item.id}>
       <Table.Td>
         <Group gap="sm">
@@ -151,7 +179,7 @@ export default function ClientsTable({ data }: ClientsTableProps) {
   ));
 
   // --- Vista Mobile: Cards ---
-  const cards = filtered.map((item) => (
+  const cards = data.map((item) => (
     <Card key={item.id} withBorder padding="md" radius="md">
       <Group justify="space-between" mb="xs">
         <Group gap="sm">
@@ -209,14 +237,16 @@ export default function ClientsTable({ data }: ClientsTableProps) {
   const emptyState = (
     <Center py="xl">
       <Text c="dimmed" fz="sm">
-        No se encontraron clientes para &ldquo;{search}&rdquo;
+        {search
+          ? `No se encontraron clientes para "${search}"`
+          : "No hay clientes registrados"}
       </Text>
     </Center>
   );
 
   return (
     <>
-      <ClientsSearchBar value={search} onChange={setSearch} />
+      <ClientsSearchBar value={search} onChange={handleSearch} />
 
       {/* Desktop */}
       <Table.ScrollContainer minWidth={800} visibleFrom="sm">
@@ -232,7 +262,7 @@ export default function ClientsTable({ data }: ClientsTableProps) {
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
-            {filtered.length === 0 && search ? (
+            {data.length === 0 ? (
               <Table.Tr>
                 <Table.Td colSpan={4}>{emptyState}</Table.Td>
               </Table.Tr>
@@ -245,8 +275,19 @@ export default function ClientsTable({ data }: ClientsTableProps) {
 
       {/* Mobile */}
       <Stack hiddenFrom="sm" gap="sm" px="lg">
-        {filtered.length === 0 && search ? emptyState : cards}
+        {data.length === 0 ? emptyState : cards}
       </Stack>
+
+      {/* Paginación */}
+      {totalPages > 1 && (
+        <Group justify="center" mt="xl" mb="md">
+          <Pagination
+            total={totalPages}
+            value={page}
+            onChange={handlePageChange}
+          />
+        </Group>
+      )}
 
       <Modal opened={opened} onClose={close} title="Editar Cliente" centered>
         <ClientForm
@@ -258,3 +299,4 @@ export default function ClientsTable({ data }: ClientsTableProps) {
     </>
   );
 }
+
