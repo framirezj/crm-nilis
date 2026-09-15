@@ -21,6 +21,7 @@ import {
 } from "@tabler/icons-react";
 import { notFound } from "next/navigation";
 import EditJobButton from "@/features/jobs/components/EditJobButton";
+import Link from "next/link";
 
 export default async function JobDetailsPage({
   params,
@@ -43,15 +44,18 @@ export default async function JobDetailsPage({
   return (
     <Container size="xl" mt="md">
       <Group justify="space-between" mb="md">
-        <Button
-          component="a"
+        <Link
           href={`/clients/${client?.id}`}
-          variant="subtle"
-          leftSection={<IconArrowLeft size={16} />}
-          px={0}
+          style={{ textDecoration: "none" }}
         >
-          Volver
-        </Button>
+          <Button
+            variant="subtle"
+            leftSection={<IconArrowLeft size={16} />}
+            px={0}
+          >
+            Volver
+          </Button>
+        </Link>
 
         <EditJobButton job={jobData} />
       </Group>
