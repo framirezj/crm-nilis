@@ -8,7 +8,7 @@ import {
   getRecentJobs,
 } from "@/features/dashboard/services/dashboard.service";
 import { StatCard } from "@/features/dashboard/components/StatCard";
-import { RevenueChart } from "@/features/dashboard/components/RevenueChart";
+import { RevenueChartWrapper } from "@/features/dashboard/components/RevenueChartWrapper";
 import { RecentJobsTable } from "@/features/dashboard/components/RecentJobsTable";
 
 export default async function DashboardPage() {
@@ -55,7 +55,7 @@ export default async function DashboardPage() {
       </SimpleGrid>
 
       {/* Revenue chart */}
-      <RevenueChart data={revenueData} />
+      <RevenueChartWrapper data={revenueData} />
 
       {/* Recent jobs */}
       <RecentJobsTable jobs={recentJobs} />
