@@ -58,7 +58,7 @@ export function RecentJobsTable({ jobs }: RecentJobsTableProps) {
             <Table.Tr>
               <Table.Th>Trabajo</Table.Th>
               <Table.Th>Cliente</Table.Th>
-              <Table.Th ta="right">Precio</Table.Th>
+              <Table.Th ta="right" visibleFrom="sm">Precio</Table.Th>
               <Table.Th ta="right">Fecha</Table.Th>
             </Table.Tr>
           </Table.Thead>
@@ -80,7 +80,7 @@ export function RecentJobsTable({ jobs }: RecentJobsTableProps) {
                     {job.client_name}
                   </Badge>
                 </Table.Td>
-                <Table.Td ta="right">
+                <Table.Td ta="right" visibleFrom="sm">
                   <Text size="sm" fw={600} c="blue.6">
                     {formatCLP(job.price)}
                   </Text>
