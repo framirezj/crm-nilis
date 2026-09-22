@@ -12,12 +12,13 @@ import {
   Divider,
   Stack,
 } from "@mantine/core";
-import { IconHome, IconUsers, IconLogout } from "@tabler/icons-react";
+import { IconHome, IconUsers, IconLogout, IconScissors } from "@tabler/icons-react";
 import { createClient } from "@/lib/supabase/client";
 
 const navItems = [
   { label: "Home", href: "/dashboard", icon: IconHome },
   { label: "Clientes", href: "/clients", icon: IconUsers },
+  { label: "Servicios", href: "/servicios", icon: IconScissors },
 ];
 
 export default function MainLayout({
