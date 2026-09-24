@@ -7,6 +7,7 @@ import {
   Button,
   Card,
   Center,
+  Chip,
   Group,
   Modal,
   Stack,
@@ -22,6 +23,8 @@ import { createClient as createSupabaseClient } from "@/lib/supabase/client";
 import { deleteServicio } from "../services/servicios.service";
 import type { Servicio } from "../types/servicios.types";
 import ServicioForm from "./ServicioForm";
+import ServicioSearchBar from "./ServicioSearchBar";
+import { useMemo } from "react";
 
 interface ServiciosTableProps {
   data: Servicio[];
@@ -41,18 +44,26 @@ function getCategoryColor(categoria: string) {
   return CATEGORY_COLORS[categoria] ?? "gray";
 }
 
-export default function ServiciosTable({ data, categorias }: ServiciosTableProps) {
+export default function ServiciosTable({
+  data,
+  categorias,
+}: ServiciosTableProps) {
   const router = useRouter();
   const supabase = createSupabaseClient();
 
   // Modal crear/editar
-  const [formOpened, { open: openForm, close: closeForm }] = useDisclosure(false);
+  const [formOpened, { open: openForm, close: closeForm }] =
+    useDisclosure(false);
   const [editingServicio, setEditingServicio] = useState<Servicio | null>(null);
 
   // Modal confirmar eliminación
-  const [deleteOpened, { open: openDelete, close: closeDelete }] = useDisclosure(false);
+  const [deleteOpened, { open: openDelete, close: closeDelete }] =
+    useDisclosure(false);
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+
+  const [search, setSearch] = useState("");
+  const [selectedCategoria, setSelectedCategoria] = useState<string | null>(null);
 
   const handleNew = () => {
     setEditingServicio(null);
@@ -90,6 +101,18 @@ export default function ServiciosTable({ data, categorias }: ServiciosTableProps
     router.refresh();
   };
 
+  const filteredData = useMemo(() => {
+    return data.filter((item) => {
+      const matchSearch = item.servicio
+        .toLowerCase()
+        .includes(search.toLowerCase());
+      const matchCategoria = selectedCategoria
+        ? item.categoria === selectedCategoria
+        : true;
+      return matchSearch && matchCategoria;
+    });
+  }, [data, search, selectedCategoria]);
+
   const emptyState = (
     <Center py="xl">
       <Text c="dimmed" fz="sm">
@@ -99,7 +122,7 @@ export default function ServiciosTable({ data, categorias }: ServiciosTableProps
   );
 
   // --- Vista desktop: tabla ---
-  const rows = data.map((item) => (
+  const rows = filteredData.map((item) => (
     <Table.Tr key={item.id}>
       <Table.Td>
         <Text fz="sm" fw={500}>
@@ -107,7 +130,11 @@ export default function ServiciosTable({ data, categorias }: ServiciosTableProps
         </Text>
       </Table.Td>
       <Table.Td>
-        <Badge variant="light" color={getCategoryColor(item.categoria)} size="sm">
+        <Badge
+          variant="light"
+          color={getCategoryColor(item.categoria)}
+          size="sm"
+        >
           {item.categoria}
         </Badge>
       </Table.Td>
@@ -135,7 +162,7 @@ export default function ServiciosTable({ data, categorias }: ServiciosTableProps
   ));
 
   // --- Vista mobile: cards ---
-  const cards = data.map((item) => (
+  const cards = filteredData.map((item) => (
     <Card key={item.id} withBorder padding="md" radius="md">
       <Group justify="space-between">
         <div>
@@ -183,6 +210,28 @@ export default function ServiciosTable({ data, categorias }: ServiciosTableProps
         </Button>
       </Group>
 
+      <ServicioSearchBar
+        value={search}
+        onChange={(value) => setSearch(value)}
+      />
+
+      <Group px="lg" mb="sm" gap="xs">
+        {categorias.map((cat) => (
+          <Chip
+            key={cat}
+            value={cat}
+            color={getCategoryColor(cat)}
+            size="sm"
+            checked={selectedCategoria === cat}
+            onChange={() =>
+              setSelectedCategoria(selectedCategoria === cat ? null : cat)
+            }
+          >
+            {cat}
+          </Chip>
+        ))}
+      </Group>
+
       {/* Desktop */}
       <Table.ScrollContainer minWidth={500} visibleFrom="sm">
         <Table verticalSpacing="sm" striped highlightOnHover>
@@ -196,7 +245,7 @@ export default function ServiciosTable({ data, categorias }: ServiciosTableProps
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
-            {data.length === 0 ? (
+            {filteredData.length === 0 ? (
               <Table.Tr>
                 <Table.Td colSpan={3}>{emptyState}</Table.Td>
               </Table.Tr>
@@ -209,7 +258,7 @@ export default function ServiciosTable({ data, categorias }: ServiciosTableProps
 
       {/* Mobile */}
       <Stack hiddenFrom="sm" gap="sm" px="lg">
-        {data.length === 0 ? emptyState : cards}
+        {filteredData.length === 0 ? emptyState : cards}
       </Stack>
 
       {/* Modal: crear / editar */}
@@ -237,14 +286,22 @@ export default function ServiciosTable({ data, categorias }: ServiciosTableProps
       >
         <Stack gap="md">
           <Text size="sm">
-            ¿Estás seguro de que querés eliminar este servicio? Esta acción no se puede
-            deshacer.
+            ¿Estás seguro de que querés eliminar este servicio? Esta acción no
+            se puede deshacer.
           </Text>
           <Group justify="flex-end">
-            <Button variant="subtle" onClick={closeDelete} disabled={deleteLoading}>
+            <Button
+              variant="subtle"
+              onClick={closeDelete}
+              disabled={deleteLoading}
+            >
               Cancelar
             </Button>
-            <Button color="red" loading={deleteLoading} onClick={handleDeleteConfirm}>
+            <Button
+              color="red"
+              loading={deleteLoading}
+              onClick={handleDeleteConfirm}
+            >
               Eliminar
             </Button>
           </Group>
