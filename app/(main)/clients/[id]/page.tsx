@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { getClientById } from "@/features/clients/services/clients.service";
 import { getJobsByClient } from "@/features/jobs/services/jobs.service";
+import { getServicios } from "@/features/servicios/services/servicios.service";
 import ClientJobsTable from "@/features/jobs/components/ClientJobsTable";
 import { Title, Container, Button, Group } from "@mantine/core";
 import { IconArrowLeft } from "@tabler/icons-react";
@@ -15,10 +16,10 @@ export default async function ClientPage({
   const { id } = await params;
   const supabase = await createClient();
 
-  // Usamos Promise.all para cargar el cliente y sus trabajos en paralelo
-  const [client, { data: jobs }] = await Promise.all([
+  const [client, { data: jobs }, catalogoServicios] = await Promise.all([
     getClientById(supabase, id),
     getJobsByClient(supabase, id),
+    getServicios(supabase),
   ]);
 
   return (
@@ -38,9 +39,10 @@ export default async function ClientPage({
         <Title order={2} c="dimmed">
           Cliente: {client?.name}
         </Title>
-        <AddJobButton clientId={id} />
+        <AddJobButton clientId={id} catalogoServicios={catalogoServicios} />
       </Group>
       <ClientJobsTable data={jobs} />
     </Container>
   );
 }
+

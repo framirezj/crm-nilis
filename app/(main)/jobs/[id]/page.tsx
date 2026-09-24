@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { getJobById } from "@/features/jobs/services/jobs.service";
 import { getClientById } from "@/features/clients/services/clients.service";
+import { getServicios } from "@/features/servicios/services/servicios.service";
 import {
   Title,
   Container,
@@ -15,12 +16,13 @@ import {
 } from "@mantine/core";
 import {
   IconCalendar,
-  IconCurrencyDollar,
   IconUser,
   IconArrowLeft,
+  IconScissors,
 } from "@tabler/icons-react";
 import { notFound } from "next/navigation";
 import EditJobButton from "@/features/jobs/components/EditJobButton";
+import JobServiciosTable from "@/features/jobs/components/JobServiciosTable";
 import Link from "next/link";
 
 export default async function JobDetailsPage({
@@ -31,14 +33,17 @@ export default async function JobDetailsPage({
   const { id } = await params;
   const supabase = await createClient();
 
-  const { data: job, error } = await getJobById(supabase, id);
+  const [{ data: job, error }, catalogoServicios] = await Promise.all([
+    getJobById(supabase, id),
+    getServicios(supabase),
+  ]);
 
-  // Si no se encuentra el trabajo o hay un error (ej. id inválido)
   if (error || !job || job.length === 0) {
     notFound();
   }
 
   const jobData = job[0];
+  const jobServicios = jobData.job_servicios ?? [];
   const client = await getClientById(supabase, jobData.client_id);
 
   return (
@@ -57,7 +62,11 @@ export default async function JobDetailsPage({
           </Button>
         </Link>
 
-        <EditJobButton job={jobData} />
+        <EditJobButton
+          job={jobData}
+          initialServicios={jobServicios}
+          catalogoServicios={catalogoServicios}
+        />
       </Group>
 
       <Paper shadow="xs" p="xl" withBorder>
@@ -89,17 +98,28 @@ export default async function JobDetailsPage({
         >
           <Box w={{ base: "100%", md: "66%" }}>
             <Stack gap="md">
-              <div>
+              <Paper withBorder p="md" radius="md">
+                <Group gap="xs" mb="sm">
+                  <IconScissors size={16} color="var(--mantine-color-gray-6)" stroke={1.5} />
+                  <Text fw={600} size="sm" c="dimmed">
+                    Servicios realizados
+                  </Text>
+                </Group>
+                <JobServiciosTable
+                  servicios={jobServicios}
+                  total={jobData.price}
+                />
+              </Paper>
+
+              {/* Descripción / notas */}
+              {jobData.description && (
                 <Paper withBorder p="md" radius="md">
                   <Text fw={600} size="sm" mb={8} c="dimmed">
-                    Descripción del Trabajo
+                    Notas
                   </Text>
-                  <Text fw={700}>
-                    {jobData.description ||
-                      "Sin descripción detallada registrada."}
-                  </Text>
+                  <Text fw={700}>{jobData.description}</Text>
                 </Paper>
-              </div>
+              )}
             </Stack>
           </Box>
 
