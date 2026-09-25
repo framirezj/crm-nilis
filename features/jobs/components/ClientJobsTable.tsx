@@ -1,9 +1,18 @@
 "use client";
 
-import { Table, Text, Card, Group, Stack, Button } from "@mantine/core";
+import {
+  Table,
+  Text,
+  Card,
+  Group,
+  Stack,
+  Button,
+  Menu,
+  ActionIcon,
+} from "@mantine/core";
 import Link from "next/link";
 import { Job } from "../types/jobs.type";
-import { IconTrash } from "@tabler/icons-react";
+import { IconTrash, IconDots, IconEye } from "@tabler/icons-react";
 import { deleteJob } from "../services/jobs.service";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
@@ -123,42 +132,63 @@ export default function ClientJobsTable({
   // --- Vista Mobile: Cards ---
   const cards = data.map((item) => (
     <Card key={item.id} withBorder padding="md" radius="md">
-      <Group justify="space-between" mb="xs">
-        <Text fz="sm" fw={500}>
-          {item.title}
-        </Text>
-        <Text fz="xs" c="dimmed">
-          {item.price != null
-            ? new Intl.NumberFormat("es-AR", {
-                style: "currency",
-                currency: "ARS",
-              }).format(item.price)
-            : "-"}
-        </Text>
-      </Group>
-      <Stack gap={4}>
-        <Text fz="xs" c="dimmed">
-          Fecha:{" "}
-          {item.date
-            ? new Intl.DateTimeFormat("es-CL", {
-                day: "2-digit",
-                month: "2-digit",
-                year: "numeric",
-                timeZone: "UTC",
-              })
-                .format(new Date(item.date))
-                .replace(/\//g, "-")
-            : "-"}
-        </Text>
-        <Button
-          component={Link}
-          href={`/jobs/${item.id}`}
-          variant="light"
-          size="xs"
+      <Group justify="space-between" align="flex-start" mb="xs">
+        <Stack gap={2} style={{ flex: 1 }}>
+          <Text fz="sm" fw={600}>
+            {item.title}
+          </Text>
+          <Text fz="xs" c="dimmed">
+            {item.date
+              ? new Intl.DateTimeFormat("es-CL", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                  timeZone: "UTC",
+                })
+                  .format(new Date(item.date))
+                  .replace(/\//g, "-")
+              : "-"}
+          </Text>
+        </Stack>
+
+        <Menu
+          transitionProps={{ transition: "pop" }}
+          withArrow
+          position="bottom-end"
+          withinPortal
         >
-          Ver detalles
-        </Button>
-      </Stack>
+          <Menu.Target>
+            <ActionIcon variant="subtle" color="gray" aria-label="Opciones">
+              <IconDots size={18} stroke={1.5} />
+            </ActionIcon>
+          </Menu.Target>
+          <Menu.Dropdown>
+            <Menu.Item
+              component={Link}
+              href={`/jobs/${item.id}`}
+              leftSection={<IconEye size={16} stroke={1.5} />}
+            >
+              Ver detalles
+            </Menu.Item>
+            <Menu.Item
+              leftSection={<IconTrash size={16} stroke={1.5} />}
+              color="red"
+              onClick={() => handleDelete(item.id, item.title)}
+            >
+              Eliminar
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
+      </Group>
+
+      <Text fz="sm" fw={500} c="violet">
+        {item.price != null
+          ? new Intl.NumberFormat("es-AR", {
+              style: "currency",
+              currency: "ARS",
+            }).format(item.price)
+          : "-"}
+      </Text>
     </Card>
   ));
 

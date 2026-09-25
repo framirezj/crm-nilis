@@ -172,7 +172,7 @@ export default function ClientsTable({
       </Table.Td>
 
       <Table.Td>
-        <Group gap={0} justify="flex-end">
+        <Group gap={0} justify="flex-start">
           <ActionIcon
             variant="subtle"
             color="gray"
@@ -273,15 +273,13 @@ export default function ClientsTable({
 
       {/* Desktop */}
       <Table.ScrollContainer minWidth={800} visibleFrom="sm">
-        <Table verticalSpacing="sm">
+        <Table verticalSpacing="sm" striped>
           <Table.Thead>
             <Table.Tr>
               <Table.Th>Cliente</Table.Th>
               <Table.Th>Email</Table.Th>
               <Table.Th>Teléfono</Table.Th>
-              <Table.Th>
-                <VisuallyHidden>Acciones</VisuallyHidden>
-              </Table.Th>
+              <Table.Th>Acciones</Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
