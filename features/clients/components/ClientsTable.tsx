@@ -32,37 +32,10 @@ import Link from "next/link";
 import { Client } from "../types/clients.type";
 import ClientForm from "./ClientForm";
 import ClientsSearchBar from "./ClientsSearchBar";
-
-function ActionsMenu() {
-  return (
-    <Menu
-      transitionProps={{ transition: "pop" }}
-      withArrow
-      position="bottom-end"
-      withinPortal
-    >
-      <Menu.Target>
-        <ActionIcon variant="subtle" color="gray" aria-label="Menú">
-          <IconDots size={16} stroke={1.5} />
-        </ActionIcon>
-      </Menu.Target>
-      <Menu.Dropdown>
-        <Menu.Item leftSection={<IconMessages size={16} stroke={1.5} />}>
-          Enviar mensaje
-        </Menu.Item>
-        <Menu.Item leftSection={<IconNote size={16} stroke={1.5} />}>
-          Agregar nota
-        </Menu.Item>
-        <Menu.Item
-          leftSection={<IconTrash size={16} stroke={1.5} />}
-          color="red"
-        >
-          Eliminar cliente
-        </Menu.Item>
-      </Menu.Dropdown>
-    </Menu>
-  );
-}
+import { notifications } from "@mantine/notifications";
+import { modals } from "@mantine/modals";
+import { createClient } from "@/lib/supabase/client";
+import { deleteClient } from "../services/clients.service";
 
 interface ClientsTableProps {
   data: Client[];
@@ -92,6 +65,7 @@ export default function ClientsTable({
   const [editingClient, setEditingClient] = useState<Client | null>(null);
   const [search, setSearch] = useState(currentSearch);
   const router = useRouter();
+  const supabase = createClient();
 
   const handlePageChange = useCallback(
     (newPage: number) => {
@@ -100,7 +74,42 @@ export default function ClientsTable({
       params.set("page", String(newPage));
       router.push(`/clients?${params.toString()}`);
     },
-    [router, search]
+    [router, search],
+  );
+
+  const handleDelete = useCallback(
+    (id: string, title: string) => {
+      modals.openConfirmModal({
+        title: "Eliminar trabajo",
+        centered: true,
+        children: (
+          <Text size="sm">
+            ¿Estás seguro que querés eliminar el trabajo{" "}
+            <strong>{title}</strong>? Esta acción no se puede deshacer.
+          </Text>
+        ),
+        labels: { confirm: "Eliminar", cancel: "Cancelar" },
+        confirmProps: { color: "red" },
+        onConfirm: async () => {
+          try {
+            await deleteClient(supabase, id);
+            notifications.show({
+              title: "Cliente eliminado",
+              message: `\"${title}\" fue eliminado correctamente.`,
+              color: "green",
+            });
+            router.refresh();
+          } catch {
+            notifications.show({
+              title: "Error",
+              message: "No se pudo eliminar el trabajo. Intentá de nuevo.",
+              color: "red",
+            });
+          }
+        },
+      });
+    },
+    [router, supabase],
   );
 
   const handleSearch = useCallback(
@@ -111,7 +120,7 @@ export default function ClientsTable({
       params.set("page", "1");
       router.push(`/clients?${params.toString()}`);
     },
-    [router]
+    [router],
   );
 
   const handleEdit = (client: Client) => {
@@ -172,7 +181,14 @@ export default function ClientsTable({
           >
             <IconPencil size={16} stroke={1.5} />
           </ActionIcon>
-          <ActionsMenu />
+          <ActionIcon
+            variant="subtle"
+            color="red"
+            aria-label="Eliminar"
+            onClick={() => handleDelete(item.id, item.name)}
+          >
+            <IconTrash size={16} stroke={1.5} />
+          </ActionIcon>
         </Group>
       </Table.Td>
     </Table.Tr>
@@ -213,7 +229,14 @@ export default function ClientsTable({
           >
             <IconPencil size={16} stroke={1.5} />
           </ActionIcon>
-          <ActionsMenu />
+          <ActionIcon
+            variant="subtle"
+            color="red"
+            aria-label="Eliminar"
+            onClick={() => handleDelete(item.id, item.name)}
+          >
+            <IconTrash size={16} stroke={1.5} />
+          </ActionIcon>
         </Group>
       </Group>
 
@@ -299,4 +322,3 @@ export default function ClientsTable({
     </>
   );
 }
-
