@@ -5,7 +5,10 @@ import {
   createTheme,
   mantineHtmlProps,
 } from "@mantine/core";
+import { ModalsProvider } from "@mantine/modals";
+import { Notifications } from "@mantine/notifications";
 import "@mantine/core/styles.css";
+import "@mantine/notifications/styles.css";
 import "./globals.css";
 
 const theme = createTheme({
@@ -30,7 +33,10 @@ export default function RootLayout({
       </head>
       <body>
         <MantineProvider theme={theme} defaultColorScheme="dark">
-          {children}
+          <ModalsProvider>
+            <Notifications position="top-right" />
+            {children}
+          </ModalsProvider>
         </MantineProvider>
       </body>
     </html>

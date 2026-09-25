@@ -3,12 +3,59 @@
 import { Table, Text, Card, Group, Stack, Button } from "@mantine/core";
 import Link from "next/link";
 import { Job } from "../types/jobs.type";
+import { IconTrash } from "@tabler/icons-react";
+import { deleteJob } from "../services/jobs.service";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
+import { modals } from "@mantine/modals";
+import { notifications } from "@mantine/notifications";
+import { useCallback } from "react";
 
 interface ClientJobsTableProps {
   data: Job[] | null;
 }
 
-export default function ClientJobsTable({ data }: ClientJobsTableProps) {
+export default function ClientJobsTable({
+  data,
+}: ClientJobsTableProps) {
+  const supabase = createClient();
+  const router = useRouter();
+
+  const handleDelete = useCallback(
+    (id: string, title: string) => {
+      modals.openConfirmModal({
+        title: "Eliminar trabajo",
+        centered: true,
+        children: (
+          <Text size="sm">
+            ¿Estás seguro que querés eliminar el trabajo{" "}
+            <strong>{title}</strong>? Esta acción no se puede deshacer.
+          </Text>
+        ),
+        labels: { confirm: "Eliminar", cancel: "Cancelar" },
+        confirmProps: { color: "red" },
+        onConfirm: async () => {
+          try {
+            await deleteJob(supabase, id);
+            notifications.show({
+              title: "Trabajo eliminado",
+              message: `"${title}" fue eliminado correctamente.`,
+              color: "green",
+            });
+            router.refresh();
+          } catch {
+            notifications.show({
+              title: "Error",
+              message: "No se pudo eliminar el trabajo. Intentá de nuevo.",
+              color: "red",
+            });
+          }
+        },
+      });
+    },
+    [router, supabase],
+  );
+
   if (!data || data.length === 0) {
     return (
       <Text c="dimmed" mt="md">
@@ -51,14 +98,24 @@ export default function ClientJobsTable({ data }: ClientJobsTableProps) {
       </Table.Td>
       <Table.Td>
         {/* Aquí puedes agregar un menú de acciones similar al de clientes */}
-        <Button
-          component={Link}
-          href={`/jobs/${item.id}`}
-          variant="light"
-          size="xs"
-        >
-          Ver detalles
-        </Button>
+        <Group gap="xs">
+          <Button
+            component={Link}
+            href={`/jobs/${item.id}`}
+            variant="light"
+            size="xs"
+          >
+            Ver detalles
+          </Button>
+          <Button
+            variant="light"
+            size="xs"
+            color="red"
+            onClick={() => handleDelete(item.id, item.title)}
+          >
+            <IconTrash size={16} stroke={1.5} />
+          </Button>
+        </Group>
       </Table.Td>
     </Table.Tr>
   ));

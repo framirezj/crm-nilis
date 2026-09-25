@@ -140,5 +140,13 @@ export async function updateJob(
 }
 
 export async function deleteJob(supabase: any, id: string) {
+  // Primero eliminar los servicios relacionados (FK constraint)
+  const { error: serviciosError } = await supabase
+    .from("job_servicios")
+    .delete()
+    .eq("job_id", id);
+
+  if (serviciosError) return { error: serviciosError };
+
   return supabase.from("jobs").delete().eq("id", id);
 }
