@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import {
   MantineProvider,
   ColorSchemeScript,
@@ -19,6 +19,13 @@ const theme = createTheme({
 export const metadata: Metadata = {
   title: "CRM Nilis",
   description: "Sistema de gestión de clientes",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  // No ponemos maximumScale: 1 para no romper accesibilidad (usuarios pueden
+  // hacer zoom manual con gesture de pinch), solo evitamos el auto-zoom en inputs.
 };
 
 export default function RootLayout({

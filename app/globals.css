@@ -26,3 +26,15 @@ button:active,
   opacity: 0.65;
   transform: scale(0.96);
 }
+
+/* ── Prevenir auto-zoom en iOS al enfocar inputs ──────────────────────── */
+/* iOS Safari hace zoom automático cuando font-size < 16px en un input.    */
+/* Forzamos 16px solo en mobile para evitarlo sin afectar el diseño desktop */
+@media screen and (max-width: 768px) {
+  input,
+  textarea,
+  select,
+  [contenteditable] {
+    font-size: 16px !important;
+  }
+}
